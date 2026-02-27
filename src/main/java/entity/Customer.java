@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.validator.constraints.CodePointLength;
 
 import java.time.LocalDateTime;
 
@@ -20,11 +19,11 @@ import java.time.LocalDateTime;
         @Index(name = "idx_customer_document", columnList = "document"),
         @Index(name = "idx_customer_email", columnList = "email")
 })
-public class customer {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "name",  nullable = false, length = 150)
     private String customerName;
@@ -43,10 +42,9 @@ public class customer {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime created_at = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at",  nullable = false)
-    private LocalDateTime updated_at;
-
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
