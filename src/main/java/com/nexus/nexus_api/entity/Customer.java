@@ -1,4 +1,4 @@
-package entity;
+package com.nexus.nexus_api.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

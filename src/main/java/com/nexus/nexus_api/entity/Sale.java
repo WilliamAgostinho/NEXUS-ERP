@@ -1,6 +1,6 @@
-package entity;
+package com.nexus.nexus_api.entity;
 
-import entity.enums.SaleStatus;
+import com.nexus.nexus_api.entity.enums.SaleStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;

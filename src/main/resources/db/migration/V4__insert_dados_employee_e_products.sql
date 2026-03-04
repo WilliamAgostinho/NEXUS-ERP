@@ -1,0 +1,106 @@
+INSERT INTO employee
+(name, role, salary, username, password_hash, active)
+VALUES
+    ('Carlos Silva',
+     'Administrador',
+     12000.00,
+     'carlos.silva',
+     '$2a$10$XJ8kL9d83kslD92kdslaQe8uT1p9sL0Z8QdLk2hR9uVbJx8WqP0Aa',
+     TRUE),
+
+    ('Ana Lima',
+     'Suporte Técnico',
+     4200.00,
+     'ana.lima',
+     '$2a$10$d92kdslaQe8uT1p9sL0Z8QdLk2hR9uVbJx8WqP0AaXJ8kL9d83ksl',
+     TRUE),
+
+    ('Lucas Almeida',
+     'Analista de Sistemas',
+     7800.00,
+     'lucas.almeida',
+     '$2a$10$uT1p9sL0Z8QdLk2hR9uVbJx8WqP0AaXJ8kL9d83kslD92kdslaQe8',
+     TRUE);
+
+INSERT INTO product
+(name, description, brand, price, stock_quantity, active, created_by)
+VALUES
+    ('Notebook Gamer X15',
+     'Notebook com Ryzen 7, 16GB RAM, SSD 512GB, RTX 4060',
+     'TechPro',
+     7499.90,
+     8,
+     TRUE,
+     1),
+
+    ('Mouse Óptico USB',
+     'Mouse com 1600 DPI, conexão USB e design ergonômico',
+     'ClickMax',
+     59.90,
+     120,
+     TRUE,
+     2),
+
+    ('Teclado Mecânico RGB',
+     'Teclado mecânico com switches blue e iluminação RGB',
+     'KeyMaster',
+     349.90,
+     35,
+     TRUE,
+     1),
+
+    ('Monitor 27" Full HD',
+     'Monitor 27 polegadas, IPS, 75Hz, HDMI e VGA',
+     'VisionTech',
+     1299.00,
+     20,
+     TRUE,
+     3),
+
+    ('Headset Gamer Surround',
+     'Headset com áudio 7.1 e microfone removível',
+     'SoundForce',
+     299.90,
+     50,
+     TRUE,
+     2),
+
+    ('Cadeira Gamer Pro',
+     'Cadeira ergonômica com ajuste de altura e reclinação 180°',
+     'ComfortPlay',
+     1899.90,
+     12,
+     TRUE,
+     1),
+
+    ('HD Externo 1TB',
+     'HD externo portátil USB 3.0 com 1TB de capacidade',
+     'DataStore',
+     429.90,
+     40,
+     TRUE,
+     3),
+
+    ('Smartphone Alpha 128GB',
+     'Smartphone com 128GB, 8GB RAM, câmera 64MP',
+     'Mobix',
+     2499.90,
+     25,
+     TRUE,
+     2),
+
+    ('Impressora Multifuncional Wi-Fi',
+     'Impressora com scanner, cópia e conexão Wi-Fi',
+     'PrintEasy',
+     899.90,
+     15,
+     TRUE,
+     1),
+
+    ('Webcam Full HD 1080p',
+     'Webcam 1080p com microfone integrado e ajuste automático de luz',
+     'StreamLine',
+     199.90,
+     60,
+     TRUE,
+     2);

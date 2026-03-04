@@ -1,7 +1,5 @@
-package entity;
+package com.nexus.nexus_api.entity;
 
-import entity.Product;
-import entity.Sale;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

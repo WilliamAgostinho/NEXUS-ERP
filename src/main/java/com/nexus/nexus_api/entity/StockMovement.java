@@ -1,8 +1,6 @@
-package entity;
+package com.nexus.nexus_api.entity;
 
-import entity.Employee;
-import entity.Product;
-import entity.enums.MovementType;
+import com.nexus.nexus_api.entity.enums.MovementType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
