@@ -1,0 +1,61 @@
+package com.nexus.nexus_api.controller;
+
+import com.nexus.nexus_api.entity.Customer;
+import com.nexus.nexus_api.repository.CustomerRepository;
+import com.nexus.nexus_api.service.CustomerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping ("/customers")
+public class CustomerController {
+
+    @Autowired
+    private CustomerService customerService;
+
+    @GetMapping("/")
+    public List<Customer> findAll() {
+        return customerService.findAll();
+    }
+
+    @GetMapping("/customers/{id}")
+    public Customer findById(@PathVariable Long id) {
+        return (Customer) customerService.findCustomerById(id);
+    }
+
+    @GetMapping("/customers/{name}")
+    public Customer findByName(@PathVariable String name) {
+        return (Customer) customerService.findCustomerByName(name);
+    }
+
+    @GetMapping("/customers/{document}")
+    public Customer findByDocument(@PathVariable String document) {
+        return (Customer) customerService.findCustomerBycustomerDocument(document);
+    }
+
+    @PostMapping("/createcustomer")
+    public Customer createCustomer(@RequestBody Customer customer) {
+        return customerService.save(customer);
+    }
+
+    @PutMapping("/updatecustomer/{id}")
+    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+        Customer existingCustomer = customerService.findByIdOrThrow(id);
+
+        existingCustomer.setCustomerEmail(customer.getCustomerEmail());
+        existingCustomer.setCustomerName(customer.getCustomerName());
+        existingCustomer.setCustomerDocument(customer.getCustomerDocument());
+        existingCustomer.setCustomerPhone(customer.getCustomerPhone());
+        existingCustomer.setCustomerIsActive(customer.isCustomerIsActive());
+
+        return customerService.save(existingCustomer);
+    }
+
+    @DeleteMapping("/deletecustomer/{id}")
+    public void deleteCustomer(@PathVariable Long id) {
+        customerService.deleteByid(id);
+    }
+
+}
