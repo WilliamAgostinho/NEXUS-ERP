@@ -9,28 +9,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping ("/customers")
+@RequestMapping ("/customer")
 public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping("/")
+    @GetMapping
     public List<Customer> findAll() {
         return customerService.findAll();
     }
 
-    @GetMapping("/customers/{id}")
+    @GetMapping("/customer/{id}")
     public Customer findById(@PathVariable Long id) {
         return (Customer) customerService.findCustomerById(id);
     }
 
-    @GetMapping("/customers/{name}")
+    @GetMapping("/customer/{name}")
     public Customer findByName(@PathVariable String name) {
         return (Customer) customerService.findCustomerByName(name);
     }
 
-    @GetMapping("/customers/{document}")
+    @GetMapping("/customer/{document}")
     public Customer findByDocument(@PathVariable String document) {
         return (Customer) customerService.findCustomerBycustomerDocument(document);
     }

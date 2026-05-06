@@ -8,23 +8,23 @@
     import java.util.List;
 
     @RestController
-    @RequestMapping("/employees")
+    @RequestMapping("/employee")
     public class EmployeeController {
 
         @Autowired
         private EmployeeService employeeService;
 
-        @GetMapping("/")
+        @GetMapping
         public List<Employee> findAll() {
             return employeeService.findAll();
         }
 
-        @GetMapping("/employeeid/{id}")
+        @GetMapping("/{id}")
         public Employee findById(@PathVariable Long id) {
             return (Employee) employeeService.findByIdOrThrow(id);
         }
 
-        @GetMapping("/employeename/{name}")
+        @GetMapping("/name/{name}")
         public Employee findByEmployeeName(@PathVariable String name) {
             return (Employee) employeeService.findByemployeeName(name);
         }
@@ -34,7 +34,7 @@
             return employeeService.save(employee);
         }
 
-        @PutMapping("/updateemployee/{id}")
+        @PutMapping("/{id}")
         public Employee update(@PathVariable Long id, @RequestBody Employee employee) {
             Employee existingEmployee = employeeService.findByIdOrThrow(id);
 
@@ -48,7 +48,7 @@
         }
 
 
-        @DeleteMapping("/deleteemployee/{id}")
+        @DeleteMapping("/{id}")
         public void delete(@PathVariable Long id) {
             employeeService.deleteById(id);
         }
