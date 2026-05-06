@@ -21,12 +21,12 @@
 
         @GetMapping("/{id}")
         public Employee findById(@PathVariable Long id) {
-            return (Employee) employeeService.findByIdOrThrow(id);
+            return employeeService.findByIdOrThrow(id);
         }
 
         @GetMapping("/name/{name}")
         public Employee findByEmployeeName(@PathVariable String name) {
-            return (Employee) employeeService.findByemployeeName(name);
+            return employeeService.findByemployeeName(name);
         }
 
         @PostMapping("/createemployee")
@@ -43,6 +43,7 @@
             existingEmployee.setEmployeeSalary(employee.getEmployeeSalary());
             existingEmployee.setEmployeeUserName(employee.getEmployeeUserName());
             existingEmployee.setEmployeeIsActive(employee.isEmployeeIsActive());
+            existingEmployee.setEmployeePasswordHash(employee.getEmployeePasswordHash());
 
             return employeeService.save(existingEmployee);
         }
