@@ -1,7 +1,6 @@
 package com.nexus.nexus_api.controller;
 
 import com.nexus.nexus_api.entity.Customer;
-import com.nexus.nexus_api.repository.CustomerRepository;
 import com.nexus.nexus_api.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,25 +21,25 @@ public class CustomerController {
 
     @GetMapping("/customer/{id}")
     public Customer findById(@PathVariable Long id) {
-        return (Customer) customerService.findCustomerById(id);
+        return customerService.findCustomerById(id);
     }
 
-    @GetMapping("/customer/{name}")
+    @GetMapping("/name/{name}")
     public Customer findByName(@PathVariable String name) {
-        return (Customer) customerService.findCustomerByName(name);
+        return customerService.findCustomerByName(name);
     }
 
-    @GetMapping("/customer/{document}")
+    @GetMapping("/document/{document}")
     public Customer findByDocument(@PathVariable String document) {
-        return (Customer) customerService.findCustomerBycustomerDocument(document);
+        return customerService.findCustomerBycustomerDocument(document);
     }
 
-    @PostMapping("/createcustomer")
+    @PostMapping("/customer")
     public Customer createCustomer(@RequestBody Customer customer) {
         return customerService.save(customer);
     }
 
-    @PutMapping("/updatecustomer/{id}")
+    @PutMapping("/{id}")
     public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
         Customer existingCustomer = customerService.findByIdOrThrow(id);
 

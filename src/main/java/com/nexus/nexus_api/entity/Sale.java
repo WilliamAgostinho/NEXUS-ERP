@@ -47,6 +47,7 @@ public class Sale {
     )
     private Employee employee;
 
+    @NotNull
     @Column(name = "sale_date", nullable = false)
     private LocalDateTime saleDate = LocalDateTime.now();
 

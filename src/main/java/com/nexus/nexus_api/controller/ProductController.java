@@ -1,8 +1,6 @@
 package com.nexus.nexus_api.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.nexus.nexus_api.entity.Product;
-import com.nexus.nexus_api.repository.ProductRepository;
 import com.nexus.nexus_api.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +21,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public Product findById(@PathVariable Long id) {
-        return (Product) productService.findByIdOrThrow(id);
+        return productService.findByIdOrThrow(id);
     }
 
     @GetMapping("/name/{name}")
@@ -36,7 +34,7 @@ public class ProductController {
         return productService.findByproductBrand(brand);
     }
 
-    @PostMapping("/createproduct")
+    @PostMapping("/product")
     public Product createProduct(@RequestBody Product product) {
         return productService.save(product);
     }

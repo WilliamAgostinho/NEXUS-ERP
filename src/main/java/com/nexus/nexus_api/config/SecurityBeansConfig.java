@@ -16,7 +16,8 @@ public class SecurityBeansConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+//                        .anyRequest().authenticated() // TODAS AS ROTAS AUTENTICADAS
+                        .anyRequest().permitAll() //LIBERAR TODAS AS ROTAS
                 );
 
         return http.build();
