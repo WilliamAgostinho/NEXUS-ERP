@@ -1,8 +1,12 @@
 package com.nexus.nexus_api.controller;
 
+import com.nexus.nexus_api.dto.CustomerRequestDto;
+import com.nexus.nexus_api.dto.CustomerResponseDto;
 import com.nexus.nexus_api.entity.Customer;
 import com.nexus.nexus_api.service.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,46 +19,56 @@ public class CustomerController {
     private CustomerService customerService;
 
     @GetMapping
-    public List<Customer> findAll() {
+    public List<CustomerResponseDto> findAll() {
         return customerService.findAll();
     }
 
-    @GetMapping("/customer/{id}")
-    public Customer findById(@PathVariable Long id) {
-        return customerService.findCustomerById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerResponseDto> findById(@PathVariable Long id){
+        CustomerResponseDto response = customerService.findCustomerById(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/name/{name}")
-    public Customer findByName(@PathVariable String name) {
-        return customerService.findCustomerByName(name);
+    public ResponseEntity<CustomerResponseDto> findByName(@PathVariable String name){
+        CustomerResponseDto response = customerService.findCustomerByName(name);
+        return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping("/document/{document}")
-    public Customer findByDocument(@PathVariable String document) {
-        return customerService.findCustomerBycustomerDocument(document);
+    public ResponseEntity<CustomerResponseDto> findByDocument(@PathVariable String document){
+        CustomerResponseDto response = customerService.findBycustomerDocument(document);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/customer")
-    public Customer createCustomer(@RequestBody Customer customer) {
-        return customerService.save(customer);
+    @PostMapping
+    public ResponseEntity<CustomerResponseDto> createCustomer(@RequestBody @Valid CustomerRequestDto dto) {
+        CustomerResponseDto response = customerService.save(dto);
+        return ResponseEntity.status(201).body(response);
     }
 
     @PutMapping("/{id}")
-    public Customer updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+    public ResponseEntity<CustomerResponseDto> updateCustomer(
+            @PathVariable Long id,
+            @RequestBody CustomerRequestDto dto) {
+
         Customer existingCustomer = customerService.findByIdOrThrow(id);
 
-        existingCustomer.setCustomerEmail(customer.getCustomerEmail());
-        existingCustomer.setCustomerName(customer.getCustomerName());
-        existingCustomer.setCustomerDocument(customer.getCustomerDocument());
-        existingCustomer.setCustomerPhone(customer.getCustomerPhone());
-        existingCustomer.setCustomerIsActive(customer.isCustomerIsActive());
+        existingCustomer.setCustomerEmail(dto.getCustomerEmail());
+        existingCustomer.setCustomerName(dto.getCustomerName());
+        existingCustomer.setCustomerDocument(dto.getCustomerDocument());
+        existingCustomer.setCustomerPhone(dto.getCustomerPhone());
+        existingCustomer.setCustomerIsActive(dto.isCustomerIsActive());
 
-        return customerService.save(existingCustomer);
+        CustomerResponseDto response = customerService.save(existingCustomer);
+
+        return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/deletecustomer/{id}")
-    public void deleteCustomer(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.deleteByid(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

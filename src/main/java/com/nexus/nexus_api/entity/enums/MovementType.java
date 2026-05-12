@@ -1,7 +1,7 @@
 package com.nexus.nexus_api.entity.enums;
 
 public enum MovementType {
-    IN,
+    ENTRY,
     OUT,
     ADJUSTMENT
 }
