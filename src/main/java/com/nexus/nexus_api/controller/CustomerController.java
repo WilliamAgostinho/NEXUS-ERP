@@ -5,18 +5,20 @@ import com.nexus.nexus_api.dto.CustomerResponseDto;
 import com.nexus.nexus_api.entity.Customer;
 import com.nexus.nexus_api.service.CustomerService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping ("/customer")
+@RequestMapping ("/customers")
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
+    private final CustomerService customerService;
+
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
+    }
 
     @GetMapping
     public List<CustomerResponseDto> findAll() {
@@ -32,7 +34,7 @@ public class CustomerController {
     @GetMapping("/name/{name}")
     public ResponseEntity<CustomerResponseDto> findByName(@PathVariable String name){
         CustomerResponseDto response = customerService.findCustomerByName(name);
-        return ResponseEntity.status(201).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/document/{document}")

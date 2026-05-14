@@ -2,6 +2,8 @@ package com.nexus.nexus_api.service;
 
 import com.nexus.nexus_api.dto.LoginRequestDto;
 import com.nexus.nexus_api.dto.LoginResponseDto;
+import com.nexus.nexus_api.exception.BusinessException;
+import com.nexus.nexus_api.exception.ResourceNotFoundException;
 import com.nexus.nexus_api.repository.EmployeeRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,7 @@ public class AuthService {
 
         var user = employeeRepository
                 .findByemployeeUserName(loginRequestDto.getLogin())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
         boolean validPassword = passwordEncoder.matches(
                 loginRequestDto.getPassword(),
@@ -31,7 +33,7 @@ public class AuthService {
         );
 
         if (!validPassword) {
-            throw new RuntimeException("Invalid password");
+            throw new BusinessException("Invalid password");
         }
 
         String token = jwtService.generateToken(user);

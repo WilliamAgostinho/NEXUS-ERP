@@ -1,8 +1,11 @@
 package com.nexus.nexus_api.controller;
 
+import com.nexus.nexus_api.dto.ProductRequestDto;
+import com.nexus.nexus_api.dto.ProductResponseDto;
 import com.nexus.nexus_api.entity.Product;
 import com.nexus.nexus_api.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,50 +14,58 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping
-    public List<Product> findAll() {
+    public List<ProductResponseDto> findAll() {
         return productService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Product findById(@PathVariable Long id) {
-        return productService.findByIdOrThrow(id);
+    public ResponseEntity<ProductResponseDto> findById(@PathVariable Long id) {
+        ProductResponseDto response = productService.findById(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/name/{name}")
-    public Product finProductByName(@PathVariable String name){
-        return productService.findByproductName(name);
+    public ResponseEntity<ProductResponseDto> finProductByName(@PathVariable String name){
+        ProductResponseDto response = productService.findByproductName(name);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/brand/{brand}")
-    public Product findProductByBrand(@PathVariable String brand){
-        return productService.findByproductBrand(brand);
+    public ResponseEntity<ProductResponseDto> findProductByBrand(@PathVariable String brand){
+        ProductResponseDto response = productService.findByproductBrand(brand);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/product")
-    public Product createProduct(@RequestBody Product product) {
-        return productService.save(product);
+    @PostMapping
+    public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductRequestDto dto) {
+        ProductResponseDto response = productService.save(dto);
+        return ResponseEntity.status(201).body(response);
     }
 
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductRequestDto dto) {
 
         Product existingProduct = productService.findByIdOrThrow(id);
 
-        existingProduct.setProductBrand(product.getProductBrand());
-        existingProduct.setProductName(product.getProductName());
-        existingProduct.setProductDescription(product.getProductDescription());
-        existingProduct.setProductPrice(product.getProductPrice());
-        existingProduct.setStockQuantity(product.getStockQuantity());
+        existingProduct.setProductBrand(dto.getProductBrand());
+        existingProduct.setProductName(dto.getProductName());
+        existingProduct.setProductDescription(dto.getProdctDescription());
+        existingProduct.setProductPrice(dto.getProductPrice());
+        existingProduct.setStockQuantity(dto.getStockQuantity());
 
-        return productService.save(existingProduct);
+        return ResponseEntity.ok(productService.save(existingProduct));
     }
 
-    @DeleteMapping("/deleteproduct/{id}")
-    public void deleteProduct(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteByid(id);
+        return ResponseEntity.noContent().build();
     }
 }

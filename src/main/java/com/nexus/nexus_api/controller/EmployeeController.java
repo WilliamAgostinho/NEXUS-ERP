@@ -1,56 +1,64 @@
     package com.nexus.nexus_api.controller;
 
+    import com.nexus.nexus_api.dto.EmployeeRequestDto;
+    import com.nexus.nexus_api.dto.EmployeeResponseDto;
     import com.nexus.nexus_api.entity.Employee;
     import com.nexus.nexus_api.service.EmployeeService;
-    import org.springframework.beans.factory.annotation.Autowired;
+    import jakarta.validation.Valid;
+    import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.*;
 
     import java.util.List;
 
     @RestController
-    @RequestMapping("/employee")
+    @RequestMapping("/employees")
     public class EmployeeController {
 
-        @Autowired
-        private EmployeeService employeeService;
+        private final EmployeeService employeeService;
+
+        public EmployeeController(EmployeeService employeeService) {
+            this.employeeService = employeeService;
+        }
 
         @GetMapping
-        public List<Employee> findAll() {
+        public List<EmployeeResponseDto> findAll() {
             return employeeService.findAll();
         }
 
         @GetMapping("/{id}")
-        public Employee findById(@PathVariable Long id) {
-            return employeeService.findByIdOrThrow(id);
+        public ResponseEntity<EmployeeResponseDto> findById(@PathVariable Long id) {
+            EmployeeResponseDto response = employeeService.findById(id);
+            return ResponseEntity.ok(response);
         }
 
         @GetMapping("/name/{name}")
-        public Employee findByEmployeeName(@PathVariable String name) {
-            return employeeService.findByemployeeName(name);
+        public ResponseEntity<EmployeeResponseDto> findByEmployeeName(@PathVariable String name) {
+            EmployeeResponseDto response = employeeService.findByemployeeName(name);
+            return ResponseEntity.ok(response);
         }
 
-        @PostMapping("/createemployee")
-        public Employee save(@RequestBody Employee employee) {
-            return employeeService.save(employee);
+        @PostMapping
+        public ResponseEntity<EmployeeResponseDto> createEmployee(@RequestBody @Valid EmployeeRequestDto dto) {
+            EmployeeResponseDto response = employeeService.save(dto);
+            return ResponseEntity.status(201).body(response);
         }
 
         @PutMapping("/{id}")
-        public Employee update(@PathVariable Long id, @RequestBody Employee employee) {
+        public ResponseEntity<EmployeeResponseDto> update(@PathVariable Long id, @RequestBody @Valid EmployeeRequestDto dto) {
+
             Employee existingEmployee = employeeService.findByIdOrThrow(id);
 
-            existingEmployee.setEmployeeName(employee.getEmployeeName());
-            existingEmployee.setEmployeeRole(employee.getEmployeeRole());
-            existingEmployee.setEmployeeSalary(employee.getEmployeeSalary());
-            existingEmployee.setEmployeeUserName(employee.getEmployeeUserName());
-            existingEmployee.setEmployeeIsActive(employee.isEmployeeIsActive());
-            existingEmployee.setEmployeePasswordHash(employee.getEmployeePasswordHash());
+            existingEmployee.setEmployeeName(dto.getEmployeeName());
+            existingEmployee.setEmployeeRole(dto.getEmployeeRole());
+            existingEmployee.setEmployeeSalary(dto.getEmployeeSalary());
+            existingEmployee.setEmployeeIsActive(dto.getEmployeeIsActive());
 
-            return employeeService.save(existingEmployee);
+            return ResponseEntity.ok(employeeService.save(existingEmployee));
         }
 
-
         @DeleteMapping("/{id}")
-        public void delete(@PathVariable Long id) {
+        public ResponseEntity<Void> delete(@PathVariable Long id) {
             employeeService.deleteById(id);
+            return ResponseEntity.noContent().build();
         }
     }

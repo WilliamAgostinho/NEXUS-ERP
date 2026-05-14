@@ -1,6 +1,7 @@
 package com.nexus.nexus_api.entity;
 
 import com.nexus.nexus_api.entity.enums.SaleStatus;
+import com.nexus.nexus_api.exception.BusinessException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -71,14 +72,14 @@ public class Sale {
 
     public void complete() {
         if (this.status == SaleStatus.CANCELLED) {
-            throw new IllegalStateException("Cannot complete a cancelled sale");
+            throw new BusinessException("Cannot complete a cancelled sale");
         }
         this.status = SaleStatus.COMPLETED;
     }
 
     public void cancel() {
         if (this.status == SaleStatus.COMPLETED) {
-            throw new IllegalStateException("Cannot cancel a completed sale");
+            throw new BusinessException("Cannot cancel a completed sale");
         }
         this.status = SaleStatus.CANCELLED;
     }

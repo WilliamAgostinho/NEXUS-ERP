@@ -1,5 +1,6 @@
 package com.nexus.nexus_api.entity;
 
+import com.nexus.nexus_api.exception.BusinessException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -78,17 +79,17 @@ public class Product {
 
     public void increaseStock(int quantity) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero");
+            throw new BusinessException("Quantity must be greater than zero");
         }
         this.stockQuantity += quantity;
     }
 
     public void decreaseStock(int quantity) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero");
+            throw new BusinessException("Quantity must be greater than zero");
         }
         if (this.stockQuantity < quantity) {
-            throw new IllegalArgumentException("Insufficient stock");
+            throw new BusinessException("Insufficient stock");
         }
         this.stockQuantity -= quantity;
     }

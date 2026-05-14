@@ -1,5 +1,6 @@
 package com.nexus.nexus_api.entity;
 
+import com.nexus.nexus_api.exception.BusinessException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,14 +48,14 @@ public class SaleItem {
 
     public void changeQuantity(Integer quantity) {
         if (quantity == null || quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero");
+            throw new BusinessException("Quantity must be greater than zero");
         }
         this.saleItemQuantity = quantity;
     }
 
     public void changeUnitPrice(BigDecimal itemPrice) {
         if (itemPrice == null || itemPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price must be greater than zero");
+            throw new BusinessException("Price must be greater than zero");
         }
         this.saleItemUnitPrice = itemPrice;
     }

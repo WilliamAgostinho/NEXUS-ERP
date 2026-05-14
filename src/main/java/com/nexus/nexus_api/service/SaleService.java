@@ -51,15 +51,17 @@ public class SaleService {
                     .orElseThrow(() -> new RuntimeException("No sale found with id: " + saleId));
         sale.setStatus(SaleStatus.COMPLETED);
         saleRepository.save(sale);
+        sale.complete();
         return sale;
     }
 
-    public Sale canceleSale(@NonNull Long saleId){
+    public Sale cancelSale(@NonNull Long saleId){
         Sale sale = new Sale();
         saleRepository.findById(saleId)
                 .orElseThrow(() -> new RuntimeException("No sale found with id: " + saleId));
         sale.setStatus(SaleStatus.CANCELLED);
         saleRepository.save(sale);
+        sale.complete();
         return sale;
     }
 

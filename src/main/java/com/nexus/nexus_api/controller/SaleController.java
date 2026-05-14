@@ -3,7 +3,6 @@ package com.nexus.nexus_api.controller;
 import com.nexus.nexus_api.entity.Sale;
 import com.nexus.nexus_api.entity.enums.SaleStatus;
 import com.nexus.nexus_api.service.SaleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.List;
 @RequestMapping("/sales")
 public class SaleController {
 
-    @Autowired
-    private SaleService saleService;
+    private final SaleService saleService;
+
+    public SaleController(SaleService saleService) {
+        this.saleService = saleService;
+    }
 
     @GetMapping
     public List<Sale> getAllSale() {
@@ -46,6 +48,6 @@ public class SaleController {
 
     @PatchMapping("/{id}/cancel")
     public Sale cancelSale(@PathVariable Long id) {
-        return saleService.canceleSale(id);
+        return saleService.cancelSale(id);
     }
 }
