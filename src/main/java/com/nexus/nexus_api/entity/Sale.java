@@ -13,6 +13,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -47,6 +49,9 @@ public class Sale {
             foreignKey = @ForeignKey(name = "fk_sale_employee")
     )
     private Employee employee;
+
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SaleItem> items = new ArrayList<>();
 
     @NotNull
     @Column(name = "sale_date", nullable = false)

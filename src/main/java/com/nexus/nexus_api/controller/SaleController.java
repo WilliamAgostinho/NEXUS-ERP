@@ -1,8 +1,12 @@
 package com.nexus.nexus_api.controller;
 
+import com.nexus.nexus_api.dto.SaleRequestDto;
+import com.nexus.nexus_api.dto.SaleResponseDto;
 import com.nexus.nexus_api.entity.Sale;
 import com.nexus.nexus_api.entity.enums.SaleStatus;
 import com.nexus.nexus_api.service.SaleService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,11 +22,11 @@ public class SaleController {
     }
 
     @GetMapping
-    public List<Sale> getAllSale() {
+    public List<SaleResponseDto> getAllSale() {
        return saleService.findAll();
     }
 
-    @GetMapping("/sale/{id}")
+    @GetMapping("{id}")
     public Sale getSaleById(@PathVariable Long id) {
        return saleService.findByIdOrThrow(id);
     }
@@ -32,13 +36,10 @@ public class SaleController {
         return saleService.findSaleBystatus(SaleStatus.valueOf(status));
     }
 
-    @PostMapping("/sale")
-    public Sale createSale(
-            @RequestParam("customerId") Long customerId,
-            @RequestParam("employeeId") Long employeeId,
-            @RequestParam("paymentMethod") String paymentMethod
-    ) {
-        return saleService.createSale(customerId, employeeId, paymentMethod);
+    @PostMapping
+    public ResponseEntity<SaleResponseDto> createSale(@RequestBody @Valid SaleRequestDto dto) {
+        SaleResponseDto response = saleService.createSale(dto);
+        return ResponseEntity.status(201).body(response);
     }
 
     @PatchMapping("/{id}/complete")

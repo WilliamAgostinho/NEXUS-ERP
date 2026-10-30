@@ -43,15 +43,17 @@ public class SecurityBeansConfig {
                         )
                 )
 
-                .authorizeHttpRequests(auth -> auth
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .anyRequest().authenticated()  // protege tudo
+//                )
 
-                        .requestMatchers("/auth/**").permitAll()
-
-                        .requestMatchers("/products/**").authenticated()
-
-                        // qualquer outra rota
-                        .anyRequest().permitAll()
-                )
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth/**").permitAll()
+//                        .requestMatchers("/products/**").authenticated()
+//                        // qualquer outra rota
+//                        .anyRequest().permitAll()
+//                )
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,

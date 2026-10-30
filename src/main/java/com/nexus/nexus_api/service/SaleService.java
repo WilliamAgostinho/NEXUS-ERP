@@ -1,14 +1,17 @@
 package com.nexus.nexus_api.service;
 
-import com.nexus.nexus_api.entity.Customer;
-import com.nexus.nexus_api.entity.Employee;
-import com.nexus.nexus_api.entity.Sale;
+import com.nexus.nexus_api.dto.SaleItemRequestDto;
+import com.nexus.nexus_api.dto.SaleItemResponseDto;
+import com.nexus.nexus_api.dto.SaleRequestDto;
+import com.nexus.nexus_api.dto.SaleResponseDto;
+import com.nexus.nexus_api.entity.*;
 import com.nexus.nexus_api.entity.enums.SaleStatus;
+import com.nexus.nexus_api.exception.ResourceNotFoundException;
 import com.nexus.nexus_api.repository.CustomerRepository;
 import com.nexus.nexus_api.repository.EmployeeRepository;
+import com.nexus.nexus_api.repository.ProductRepository;
 import com.nexus.nexus_api.repository.SaleRepository;
-import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,57 +19,83 @@ import java.util.List;
 
 @Service
 public class SaleService {
-    @Autowired
-    private SaleRepository saleRepository;
-    @Autowired
-    private CustomerRepository customerRepository;
-    @Autowired
-    private EmployeeRepository employeeRepository;
 
-    public SaleService(SaleRepository saleRepository) {
+    private final SaleRepository saleRepository;
+
+    private final CustomerRepository customerRepository;
+
+    private final EmployeeRepository employeeRepository;
+
+    private final ProductRepository productRepository;
+
+    public SaleService(SaleRepository saleRepository, CustomerRepository customerRepository, EmployeeRepository employeeRepository,  ProductRepository productRepository) {
         this.saleRepository = saleRepository;
+        this.customerRepository = customerRepository;
+        this.employeeRepository = employeeRepository;
+        this.productRepository = productRepository;
     }
 
-    public Sale createSale(@NonNull Long customerId,@NonNull Long employeeId,@NonNull String paymentMethod){
+    @Transactional
+    public SaleResponseDto createSale(SaleRequestDto dto) {
+        Customer customer = customerRepository.findById(dto.getCustomerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + dto.getCustomerId()));
+
+        Employee employee = employeeRepository.findById(dto.getEmployeeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + dto.getEmployeeId()));
+
         Sale sale = new Sale();
 
-        Customer customer = customerRepository.findById(customerId)
-                        .orElseThrow(() -> new RuntimeException("No customer found with id: " + customerId));
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("No employee found with id: " + employeeId));
+        for (SaleItemRequestDto itemDto : dto.getItems()){
+
+            Product product = productRepository.findById(itemDto.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + itemDto.getProductId()));
+
+            product.decreaseStock(itemDto.getQuantity());
+
+            SaleItem saleItem = new SaleItem();
+            saleItem.setSale(sale);
+            saleItem.setProduct(product);
+            saleItem.setSaleItemQuantity(itemDto.getQuantity());
+            saleItem.setSaleItemUnitPrice(product.getProductPrice());
+
+            sale.getItems().add(saleItem);
+
+            BigDecimal subTotal = product.getProductPrice()
+                    .multiply(BigDecimal.valueOf((itemDto.getQuantity())));
+
+            totalAmount = totalAmount.add(subTotal);
+        }
 
         sale.setCustomer(customer);
         sale.setEmployee(employee);
-        sale.setPaymentMethod(paymentMethod);
-        sale.setTotalAmount(BigDecimal.ZERO);
+        sale.setPaymentMethod(dto.getPaymentMethod());
         sale.setStatus(SaleStatus.OPEN);
-        saleRepository.save(sale);
-        return sale;
+        sale.setTotalAmount(totalAmount);
+
+        return toDto(saleRepository.save(sale));
     }
 
-    public Sale completeSale(@NonNull Long saleId){
-        Sale sale = new Sale();
-        saleRepository.findById(saleId)
-                    .orElseThrow(() -> new RuntimeException("No sale found with id: " + saleId));
-        sale.setStatus(SaleStatus.COMPLETED);
-        saleRepository.save(sale);
+    public Sale completeSale(Long saleId) {
+        Sale sale = saleRepository.findById(saleId)
+                .orElseThrow(() -> new ResourceNotFoundException("No sale found with id: " + saleId));
         sale.complete();
-        return sale;
+        return saleRepository.save(sale);
     }
 
-    public Sale cancelSale(@NonNull Long saleId){
-        Sale sale = new Sale();
-        saleRepository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("No sale found with id: " + saleId));
-        sale.setStatus(SaleStatus.CANCELLED);
-        saleRepository.save(sale);
-        sale.complete();
-        return sale;
+    public Sale cancelSale(Long saleId) {
+        Sale sale = saleRepository.findById(saleId)
+                .orElseThrow(() -> new ResourceNotFoundException("No sale found with id: " + saleId));
+        sale.cancel();
+        return saleRepository.save(sale);
     }
 
-    public List<Sale> findAll() {
-        return saleRepository.findAll();
+    public List<SaleResponseDto> findAll() {
+        List<Sale> sales = saleRepository.findAll();
+        return sales.stream()
+                .map(this::toDto)
+                .toList();
     }
 
     public Sale findByIdOrThrow(Long saleId) {
@@ -76,5 +105,37 @@ public class SaleService {
 
     public List<Sale> findSaleBystatus(SaleStatus saleStatus) {
         return saleRepository.findSalesByStatus(saleStatus);
+    }
+
+    private SaleItemResponseDto toItemDto(SaleItem Item) {
+        BigDecimal subTotal = Item.getSaleItemUnitPrice()
+                .multiply(BigDecimal.valueOf((Item.getSaleItemQuantity())));
+
+        return new SaleItemResponseDto(
+            Item.getProduct().getId(),
+            Item.getProduct().getProductName(),
+            Item.getSaleItemQuantity(),
+            Item.getSaleItemUnitPrice(),
+            subTotal
+        );
+    }
+
+    private SaleResponseDto toDto(Sale sale) {
+        List<SaleItemResponseDto> itemDtos = sale.getItems().stream()
+                .map(this::toItemDto)
+                .toList();
+
+        return new SaleResponseDto(
+                sale.getId(),
+                sale.getCustomer().getId(),
+                sale.getCustomer().getCustomerName(),
+                sale.getEmployee().getId(),
+                sale.getEmployee().getEmployeeName(),
+                sale.getPaymentMethod(),
+                sale.getTotalAmount(),
+                sale.getStatus(),
+                sale.getSaleDate(),
+                itemDtos
+        );
     }
 }

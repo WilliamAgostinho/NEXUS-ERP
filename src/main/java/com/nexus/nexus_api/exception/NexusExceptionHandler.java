@@ -1,6 +1,7 @@
 package com.nexus.nexus_api.exception;
 
 import com.nexus.nexus_api.dto.ErrorResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class NexusExceptionHandler {
 
@@ -33,9 +35,10 @@ public class NexusExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGeneric(Exception ex) {
+        log.error("UNHANDLED ERROR: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
         ErrorResponseDto error = new ErrorResponseDto(
                 500,
-                "Erro interno do servidor",
+                "Internal server error",
                 LocalDateTime.now()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
