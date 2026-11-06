@@ -43,12 +43,14 @@ public class SaleController {
     }
 
     @PatchMapping("/{id}/complete")
-    public Sale completeSale(@PathVariable Long id) {
-        return saleService.completeSale(id);
+    public ResponseEntity<SaleResponseDto> completeSale(@PathVariable Long id) {
+        SaleResponseDto response = saleService.completeSale(id);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}/cancel")
-    public Sale cancelSale(@PathVariable Long id) {
-        return saleService.cancelSale(id);
+    public ResponseEntity<SaleResponseDto> cancelSale(@PathVariable Long id) {
+        SaleResponseDto response = saleService.cancelSale(id);
+        return ResponseEntity.ok(response);
     }
 }

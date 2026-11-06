@@ -9,7 +9,7 @@ import com.nexus.nexus_api.entity.enums.MovementType;
 import com.nexus.nexus_api.entity.enums.SaleStatus;
 import com.nexus.nexus_api.exception.ResourceNotFoundException;
 import com.nexus.nexus_api.repository.*;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -86,18 +86,33 @@ public class SaleService {
         return toDto(saleRepository.save(sale));
     }
 
-    public Sale completeSale(Long saleId) {
+    @Transactional
+    public SaleResponseDto completeSale(Long saleId) {
         Sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new ResourceNotFoundException("No sale found with id: " + saleId));
         sale.complete();
-        return saleRepository.save(sale);
+        return toDto(saleRepository.save(sale));
     }
 
-    public Sale cancelSale(Long saleId) {
+    @Transactional
+    public SaleResponseDto cancelSale(Long saleId) {
         Sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new ResourceNotFoundException("No sale found with id: " + saleId));
         sale.cancel();
-        return saleRepository.save(sale);
+
+        for (SaleItem item : sale.getItems()){
+            item.getProduct().increaseStock(item.getSaleItemQuantity());
+
+            StockMovement movement = new StockMovement();
+            movement.setEmployee(sale.getEmployee());
+            movement.setProduct(item.getProduct());
+            movement.setQuantity(item.getSaleItemQuantity());
+            movement.setMovementType(MovementType.REVERSAL);
+
+            stockMovementRepository.save(movement);
+        }
+
+        return toDto(saleRepository.save(sale));
     }
 
     public List<SaleResponseDto> findAll() {
@@ -109,7 +124,7 @@ public class SaleService {
 
     public Sale findByIdOrThrow(Long saleId) {
         return saleRepository.findById(saleId)
-                .orElseThrow(() -> new RuntimeException("No sale found with id: " + saleId));
+                .orElseThrow(() -> new ResourceNotFoundException("No sale found with id: " + saleId));
     }
 
     public List<Sale> findSaleBystatus(SaleStatus saleStatus) {

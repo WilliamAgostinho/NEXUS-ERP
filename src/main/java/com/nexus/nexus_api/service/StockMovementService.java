@@ -11,9 +11,10 @@ import com.nexus.nexus_api.exception.ResourceNotFoundException;
 import com.nexus.nexus_api.repository.EmployeeRepository;
 import com.nexus.nexus_api.repository.ProductRepository;
 import com.nexus.nexus_api.repository.StockMovementRepository;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +31,8 @@ public class StockMovementService {
         this.stockMovementRepository = stockMovementRepository;
     }
 
-    public StockMovement findByIdOrThrow(Long id) {
-        return stockMovementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-    }
-
     @Transactional
-    public List<StockMovementResponseDto> save (@Valid StockEntryRequestDto dto) {
+    public List<StockMovementResponseDto> save (@Valid @NonNull StockEntryRequestDto dto) {
         Employee employee = employeeRepository.findById(dto.getEmployeeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + dto.getEmployeeId()));
 
@@ -66,7 +62,7 @@ public class StockMovementService {
                 .toList();
     }
 
-    private StockMovementResponseDto toDto (StockMovement stockMovement) {
+    private @NonNull StockMovementResponseDto toDto (StockMovement stockMovement) {
         return new StockMovementResponseDto(
                 stockMovement.getId(),
                 stockMovement.getProduct().getId(),
