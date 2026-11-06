@@ -5,12 +5,10 @@ import com.nexus.nexus_api.dto.SaleItemResponseDto;
 import com.nexus.nexus_api.dto.SaleRequestDto;
 import com.nexus.nexus_api.dto.SaleResponseDto;
 import com.nexus.nexus_api.entity.*;
+import com.nexus.nexus_api.entity.enums.MovementType;
 import com.nexus.nexus_api.entity.enums.SaleStatus;
 import com.nexus.nexus_api.exception.ResourceNotFoundException;
-import com.nexus.nexus_api.repository.CustomerRepository;
-import com.nexus.nexus_api.repository.EmployeeRepository;
-import com.nexus.nexus_api.repository.ProductRepository;
-import com.nexus.nexus_api.repository.SaleRepository;
+import com.nexus.nexus_api.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -28,11 +26,14 @@ public class SaleService {
 
     private final ProductRepository productRepository;
 
-    public SaleService(SaleRepository saleRepository, CustomerRepository customerRepository, EmployeeRepository employeeRepository,  ProductRepository productRepository) {
+    private final StockMovementRepository stockMovementRepository;
+
+    public SaleService(SaleRepository saleRepository, CustomerRepository customerRepository, EmployeeRepository employeeRepository, ProductRepository productRepository, StockMovementRepository stockMovementRepository) {
         this.saleRepository = saleRepository;
         this.customerRepository = customerRepository;
         this.employeeRepository = employeeRepository;
         this.productRepository = productRepository;
+        this.stockMovementRepository = stockMovementRepository;
     }
 
     @Transactional
@@ -59,6 +60,14 @@ public class SaleService {
             saleItem.setProduct(product);
             saleItem.setSaleItemQuantity(itemDto.getQuantity());
             saleItem.setSaleItemUnitPrice(product.getProductPrice());
+
+            StockMovement stockMovement = new StockMovement();
+            stockMovement.setEmployee(employee);
+            stockMovement.setProduct(product);
+            stockMovement.setQuantity(itemDto.getQuantity());
+            stockMovement.setMovementType(MovementType.OUT);
+
+            stockMovementRepository.save(stockMovement);
 
             sale.getItems().add(saleItem);
 
